@@ -315,7 +315,7 @@
         // Registrar service worker
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', function() {
-                navigator.serviceWorker.register('/sw.js').then(function(registration) {
+                navigator.serviceWorker.register('/cromo-coleccion/sw.js').then(function(registration) {
                     console.log('SW registrado:', registration.scope);
                 }).catch(function(error) {
                     console.log('SW falló:', error);
@@ -327,16 +327,6 @@
         document.addEventListener('DOMContentLoaded', function() {
             renderCollectionsList();
         });
-    </script>
-
-    <!-- Service Worker -->
-    <script>
-        // Este script es solo para generar el sw.js dinámicamente.
-        // En producción, deberías tener un archivo físico sw.js.
-        // Pero aquí lo generamos como parte del HTML para simplicidad.
-        // NOTA: Esto no funciona en todos los navegadores. Recomendamos crear sw.js como archivo separado.
-        // Para este ejemplo, lo dejamos así para que sea un único archivo.
-        // En la práctica, guarda el contenido siguiente en un archivo llamado "sw.js" en la misma carpeta.
     </script>
 
 </body>
