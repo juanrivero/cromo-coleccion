@@ -2,7 +2,7 @@
   "name": "Administrador de Colecciones de Cromos",
   "short_name": "Cromos",
   "description": "Crea y administra colecciones de cromos con grilla interactiva.",
-  "start_url": "/cromo-coleccion/",
+  "start_url": "https://juanrivero.github.io/cromo-coleccion/",
   "display": "standalone",
   "background_color": "#4CAF50",
   "theme_color": "#4CAF50",
