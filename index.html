@@ -22,6 +22,8 @@
             --color-bg: #F8F9FA;
             --shadow: 0 2px 8px rgba(0,0,0,0.1);
             --radius: 12px;
+            --card-radius: 16px;
+            --avatar-size: 80px;
         }
 
         body {
@@ -47,7 +49,7 @@
             margin-bottom: 24px;
             display: flex;
             flex-wrap: wrap;
-            gap: 12px;
+            gap: 16px;
             justify-content: center;
             align-items: center;
         }
@@ -63,16 +65,17 @@
         }
 
         .avatar-preview {
-            width: 60px;
-            height: 60px;
+            width: var(--avatar-size);
+            height: var(--avatar-size);
             border-radius: 50%;
             background: #f0f0f0;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 24px;
+            font-size: 32px;
             color: #999;
             overflow: hidden;
+            flex-shrink: 0;
         }
 
         .avatar-preview img {
@@ -82,17 +85,19 @@
         }
 
         .btn {
-            padding: 12px 20px;
-            font-size: 16px;
+            padding: 10px;
+            font-size: 18px;
             font-weight: 600;
             border: none;
             border-radius: 8px;
             cursor: pointer;
             display: inline-flex;
             align-items: center;
-            gap: 8px;
+            justify-content: center;
             transition: all 0.2s ease;
             box-shadow: var(--shadow);
+            width: 44px;
+            height: 44px;
         }
 
         .btn-primary { background-color: var(--color-primary); color: white; }
@@ -109,28 +114,40 @@
         .collections-list {
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 16px;
+        }
+
+        .collection-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
         }
 
         .collection-item {
             background: white;
-            padding: 20px;
-            border-radius: var(--radius);
+            padding: 16px;
+            border-radius: var(--card-radius);
             box-shadow: var(--shadow);
             display: flex;
+            align-items: center;
             gap: 16px;
+            transition: transform 0.2s ease;
+        }
+
+        .collection-item:hover {
+            transform: translateY(-2px);
         }
 
         .collection-avatar {
-            width: 60px;
-            height: 60px;
+            width: var(--avatar-size);
+            height: var(--avatar-size);
             border-radius: 50%;
             background: #f0f0f0;
             flex-shrink: 0;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 24px;
+            font-size: 32px;
             color: #999;
             overflow: hidden;
         }
@@ -143,33 +160,22 @@
 
         .collection-content {
             flex: 1;
-        }
-
-        .collection-header {
             display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            align-items: flex-start;
-            gap: 16px;
-        }
-
-        .collection-info {
-            flex: 1;
-            min-width: 200px;
+            flex-direction: column;
+            gap: 8px;
         }
 
         .collection-name {
             font-size: 20px;
             font-weight: 700;
             color: var(--color-primary);
-            margin-bottom: 6px;
         }
 
         .collection-stats {
-            color: #666;
-            font-size: 14px;
             display: flex;
-            gap: 12px;
+            gap: 20px;
+            font-size: 13px;
+            color: #666;
         }
 
         .stat-item {
@@ -178,7 +184,7 @@
         }
 
         .stat-label {
-            font-size: 12px;
+            font-size: 11px;
             color: #888;
         }
 
@@ -189,19 +195,37 @@
 
         .collection-actions {
             display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            align-self: center;
+            gap: 8px;
         }
 
+        .action-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .action-btn.view { background-color: #4285F4; color: white; }
+        .action-btn.view:hover { background-color: #3b78e7; }
+        .action-btn.edit { background-color: #FBBC05; color: white; }
+        .action-btn.edit:hover { background-color: #f2b200; }
+        .action-btn.delete { background-color: #EA4335; color: white; }
+        .action-btn.delete:hover { background-color: #d93d2e; }
+
         .grid-container {
-            margin-top: 20px;
+            margin-top: 0;
             display: grid;
             gap: 6px;
             background: #f5f7fa;
             padding: 16px;
-            border-radius: var(--radius);
+            border-radius: 0 0 var(--card-radius) var(--card-radius);
             grid-template-columns: repeat(auto-fill, minmax(48px, 1fr));
+            box-shadow: var(--shadow);
         }
 
         .sticker {
@@ -215,6 +239,7 @@
             user-select: none;
             overflow: hidden;
             font-weight: bold;
+            position: relative;
         }
 
         .sticker-number {
@@ -238,16 +263,27 @@
         .sticker.orange { background-color: var(--color-secondary); }
 
         @media (max-width: 600px) {
-            .sticker-number { font-size: 16px; }
-            .sticker-count { font-size: 9px; }
-            .collection-stats { flex-direction: column; gap: 4px; }
-            h1 { font-size: 24px; }
             .collection-item {
                 flex-direction: column;
+                align-items: stretch;
             }
-            .collection-avatar {
-                align-self: flex-start;
+
+            .collection-content {
+                width: 100%;
             }
+
+            .collection-stats {
+                flex-wrap: wrap;
+            }
+
+            .collection-actions {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .sticker-number { font-size: 16px; }
+            .sticker-count { font-size: 9px; }
+            h1 { font-size: 24px; }
         }
     </style>
 </head>
@@ -261,21 +297,20 @@
         <input type="text" id="collectionName" placeholder="Nombre de la colección" />
         <input type="number" id="stickerCount" placeholder="Cantidad de cromos" min="1" />
         <input type="file" id="imageUpload" accept="image/*" capture="environment" style="display:none;" />
-        <button id="uploadBtn" class="btn btn-secondary">
-            <span>📷</span> Imagen
+        <button id="uploadBtn" class="btn btn-secondary" title="Subir imagen">
+            📷
         </button>
-        <button id="saveBtn" class="btn btn-primary">
-            <span id="saveIcon">➕</span> <span id="saveText">Crear</span>
+        <button id="saveBtn" class="btn btn-primary" title="Crear colección">
+            ➕
         </button>
-        <button id="cancelBtn" class="btn btn-secondary" style="display:none;">
-            <span>↩️</span> Cancelar
+        <button id="cancelBtn" class="btn btn-secondary" style="display:none;" title="Cancelar">
+            ↩️
         </button>
     </div>
 
     <div class="collections-list" id="collectionsList"></div>
 
     <script>
-        // Manejo seguro de localStorage
         function getStoredCollections() {
             try {
                 const data = localStorage.getItem('collections');
@@ -296,7 +331,7 @@
 
         let collections = getStoredCollections();
         let editingIndex = -1;
-        let currentImageBase64 = null; // Imagen actual en el formulario
+        let currentImageBase64 = null;
 
         const collectionNameInput = document.getElementById('collectionName');
         const stickerCountInput = document.getElementById('stickerCount');
@@ -305,16 +340,12 @@
         const avatarPreview = document.getElementById('avatarPreview');
         const saveBtn = document.getElementById('saveBtn');
         const cancelBtn = document.getElementById('cancelBtn');
-        const saveIcon = document.getElementById('saveIcon');
-        const saveText = document.getElementById('saveText');
         const collectionsList = document.getElementById('collectionsList');
 
-        // Abrir selector de imagen
         uploadBtn.addEventListener('click', () => {
             imageUpload.click();
         });
 
-        // Manejar selección de imagen
         imageUpload.addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (file) {
@@ -326,18 +357,6 @@
                 reader.readAsDataURL(file);
             }
         });
-
-        function updateSaveButton(isEditing) {
-            if (isEditing) {
-                saveIcon.textContent = '✅';
-                saveText.textContent = 'Guardar';
-                saveBtn.className = 'btn btn-success';
-            } else {
-                saveIcon.textContent = '➕';
-                saveText.textContent = 'Crear';
-                saveBtn.className = 'btn btn-primary';
-            }
-        }
 
         function saveCollection() {
             const name = collectionNameInput.value.trim();
@@ -352,7 +371,7 @@
                 total: count,
                 owned: Array(count).fill(0),
                 showGrid: false,
-                image: currentImageBase64 // Puede ser null o Base64
+                image: currentImageBase64
             };
 
             if (editingIndex === -1) {
@@ -369,7 +388,6 @@
                     showGrid: collections[editingIndex].showGrid
                 };
                 editingIndex = -1;
-                updateSaveButton(false);
                 cancelBtn.style.display = 'none';
             }
 
@@ -380,7 +398,6 @@
 
         function cancelEdit() {
             editingIndex = -1;
-            updateSaveButton(false);
             cancelBtn.style.display = 'none';
             clearForm();
         }
@@ -401,8 +418,11 @@
                 const totalPhysical = collection.owned.reduce((sum, n) => sum + n, 0);
                 const duplicates = totalPhysical - ownedCount;
 
-                const div = document.createElement('div');
-                div.className = 'collection-item';
+                const wrapper = document.createElement('div');
+                wrapper.className = 'collection-wrapper';
+
+                const item = document.createElement('div');
+                item.className = 'collection-item';
 
                 const avatarDiv = document.createElement('div');
                 avatarDiv.className = 'collection-avatar';
@@ -415,67 +435,71 @@
                 const contentDiv = document.createElement('div');
                 contentDiv.className = 'collection-content';
 
-                const header = document.createElement('div');
-                header.className = 'collection-header';
+                const nameDiv = document.createElement('div');
+                nameDiv.className = 'collection-name';
+                nameDiv.textContent = collection.name;
 
-                const info = document.createElement('div');
-                info.className = 'collection-info';
-                info.innerHTML = `
-                    <div class="collection-name">${collection.name}</div>
-                    <div class="collection-stats">
-                        <div class="stat-item">
-                            <span class="stat-label">Completados</span>
-                            <span class="stat-value">${ownedCount}/${collection.total}</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-label">Repetidos</span>
-                            <span class="stat-value">${duplicates}</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-label">Total cromos</span>
-                            <span class="stat-value">${totalPhysical}</span>
-                        </div>
+                const statsDiv = document.createElement('div');
+                statsDiv.className = 'collection-stats';
+                statsDiv.innerHTML = `
+                    <div class="stat-item">
+                        <span class="stat-label">Completados</span>
+                        <span class="stat-value">${ownedCount}/${collection.total}</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Repetidos</span>
+                        <span class="stat-value">${duplicates}</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Total cromos</span>
+                        <span class="stat-value">${totalPhysical}</span>
                     </div>
                 `;
 
-                const actions = document.createElement('div');
-                actions.className = 'collection-actions';
+                const actionsDiv = document.createElement('div');
+                actionsDiv.className = 'collection-actions';
 
-                const toggleBtn = document.createElement('button');
-                toggleBtn.className = collection.showGrid ? 'btn btn-secondary' : 'btn btn-primary';
-                toggleBtn.innerHTML = `<span>${collection.showGrid ? '👁️' : '🔍'}</span> ${collection.showGrid ? 'Ocultar' : 'Ver'}`;
+                const toggleBtn = document.createElement('div');
+                toggleBtn.className = 'action-btn view';
+                toggleBtn.textContent = '🔍';
+                toggleBtn.title = collection.showGrid ? 'Ocultar' : 'Ver';
                 toggleBtn.addEventListener('click', () => {
                     collection.showGrid = !collection.showGrid;
                     saveToLocalStorage(collections);
                     renderCollections();
                 });
 
-                const editBtn = document.createElement('button');
-                editBtn.className = 'btn btn-warning';
-                editBtn.innerHTML = '<span>✏️</span> Editar';
+                const editBtn = document.createElement('div');
+                editBtn.className = 'action-btn edit';
+                editBtn.textContent = '✏️';
+                editBtn.title = 'Editar';
                 editBtn.addEventListener('click', () => editCollection(index));
 
-                const deleteBtn = document.createElement('button');
-                deleteBtn.className = 'btn btn-danger';
-                deleteBtn.innerHTML = '<span>🗑️</span> Eliminar';
+                const deleteBtn = document.createElement('div');
+                deleteBtn.className = 'action-btn delete';
+                deleteBtn.textContent = '🗑️';
+                deleteBtn.title = 'Eliminar';
                 deleteBtn.addEventListener('click', () => deleteCollection(index));
 
-                actions.appendChild(toggleBtn);
-                actions.appendChild(editBtn);
-                actions.appendChild(deleteBtn);
+                actionsDiv.appendChild(toggleBtn);
+                actionsDiv.appendChild(editBtn);
+                actionsDiv.appendChild(deleteBtn);
 
-                header.appendChild(info);
-                header.appendChild(actions);
-                contentDiv.appendChild(header);
+                contentDiv.appendChild(nameDiv);
+                contentDiv.appendChild(statsDiv);
+
+                item.appendChild(avatarDiv);
+                item.appendChild(contentDiv);
+                item.appendChild(actionsDiv);
+
+                wrapper.appendChild(item);
 
                 if (collection.showGrid) {
                     const grid = createGrid(collection, index);
-                    contentDiv.appendChild(grid);
+                    wrapper.appendChild(grid);
                 }
 
-                div.appendChild(avatarDiv);
-                div.appendChild(contentDiv);
-                collectionsList.appendChild(div);
+                collectionsList.appendChild(wrapper);
             });
         }
 
@@ -483,38 +507,82 @@
             const gridContainer = document.createElement('div');
             gridContainer.className = 'grid-container';
 
-            collection.owned.forEach((count, i) => {
+            collection.owned.forEach((initialCount, i) => {
                 const sticker = document.createElement('div');
                 const number = i + 1;
 
-                if (count === 0) {
-                    sticker.className = 'sticker gray';
-                    sticker.innerHTML = `<div class="sticker-number">${number}</div>`;
-                } else if (count === 1) {
-                    sticker.className = 'sticker green';
-                    sticker.innerHTML = `
-                        <div class="sticker-number">${number}</div>
-                        <div class="sticker-count">${count}</div>
-                    `;
-                } else {
-                    sticker.className = 'sticker orange';
-                    sticker.innerHTML = `
-                        <div class="sticker-number">${number}</div>
-                        <div class="sticker-count">${count}</div>
-                    `;
+                function updateStickerUI() {
+                    const currentCount = collections[collectionIndex].owned[i];
+                    if (currentCount === 0) {
+                        sticker.className = 'sticker gray';
+                        sticker.innerHTML = `<div class="sticker-number">${number}</div>`;
+                    } else if (currentCount === 1) {
+                        sticker.className = 'sticker green';
+                        sticker.innerHTML = `
+                            <div class="sticker-number">${number}</div>
+                            <div class="sticker-count">${currentCount}</div>
+                        `;
+                    } else {
+                        sticker.className = 'sticker orange';
+                        sticker.innerHTML = `
+                            <div class="sticker-number">${number}</div>
+                            <div class="sticker-count">${currentCount}</div>
+                        `;
+                    }
                 }
 
+                updateStickerUI();
+
+                let isHolding = false;
+                let holdTimer = null;
+
+                const startHold = () => {
+                    isHolding = true;
+                    holdTimer = setTimeout(() => {
+                        collections[collectionIndex].owned[i] = 0;
+                        isHolding = false;
+                        saveToLocalStorage(collections);
+                        renderCollections(); // 👈 Actualiza TODO
+                    }, 800);
+                };
+
+                const cancelHold = () => {
+                    if (holdTimer) {
+                        clearTimeout(holdTimer);
+                        holdTimer = null;
+                    }
+                    isHolding = false;
+                };
+
                 sticker.addEventListener('click', () => {
-                    collections[collectionIndex].owned[i] += 1;
-                    saveToLocalStorage(collections);
-                    renderCollections();
+                    if (!isHolding) {
+                        collections[collectionIndex].owned[i] += 1;
+                        saveToLocalStorage(collections);
+                        renderCollections(); // 👈 Actualiza TODO
+                    }
                 });
+
+                // Mouse
+                sticker.addEventListener('mousedown', startHold);
+                sticker.addEventListener('mouseleave', cancelHold);
+                sticker.addEventListener('mouseup', cancelHold);
+
+                // Touch
+                sticker.addEventListener('touchstart', (e) => {
+                    e.preventDefault();
+                    startHold();
+                });
+                sticker.addEventListener('touchend', (e) => {
+                    e.preventDefault();
+                    cancelHold();
+                });
+                sticker.addEventListener('touchmove', cancelHold);
 
                 gridContainer.appendChild(sticker);
             });
 
             return gridContainer;
-        }
+        }      
 
         function editCollection(index) {
             const coll = collections[index];
@@ -527,7 +595,6 @@
                 avatarPreview.innerHTML = '📦';
             }
             editingIndex = index;
-            updateSaveButton(true);
             cancelBtn.style.display = 'inline-flex';
         }
 
@@ -542,8 +609,8 @@
         saveBtn.addEventListener('click', saveCollection);
         cancelBtn.addEventListener('click', cancelEdit);
 
-        updateSaveButton(false);
         renderCollections();
     </script>
 </body>
 </html>
+
