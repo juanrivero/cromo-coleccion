@@ -1,333 +1,549 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Administrador de Colecciones de Cromos</title>
-    <link rel="manifest" href="manifest.json">
-    <link rel="apple-touch-icon" href="icon-192.png">
-    <meta name="theme-color" content="#4CAF50">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Colecciones de Cromos</title>
     <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --color-primary: #3483FA;
+            --color-secondary: #FF7043;
+            --color-success: #4CAF50;
+            --color-danger: #F44336;
+            --color-gray: #e0e0e0;
+            --color-text: #333;
+            --color-bg: #F8F9FA;
+            --shadow: 0 2px 8px rgba(0,0,0,0.1);
+            --radius: 12px;
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #f5f5f5;
+            padding: 16px;
+            background-color: var(--color-bg);
+            color: var(--color-text);
+            line-height: 1.5;
         }
-        .container {
-            background-color: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
+
         h1 {
             text-align: center;
-            color: #333;
+            margin-bottom: 20px;
+            color: var(--color-primary);
+            font-size: 28px;
+            font-weight: 700;
         }
-        .form-group {
-            margin-bottom: 15px;
+
+        .form-container {
+            background: white;
+            padding: 20px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 24px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            align-items: center;
         }
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
+
+        .form-container input:not([type="file"]) {
+            padding: 12px 16px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            min-width: 180px;
+            flex: 1;
+            max-width: 300px;
         }
-        input, button {
+
+        .avatar-preview {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: #999;
+            overflow: hidden;
+        }
+
+        .avatar-preview img {
             width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .btn {
+            padding: 12px 20px;
             font-size: 16px;
-        }
-        button {
-            background-color: #4CAF50;
-            color: white;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
             cursor: pointer;
-            margin-top: 10px;
-            font-weight: bold;
-            transition: background-color 0.3s;
-        }
-        button:hover {
-            background-color: #45a049;
-        }
-        .grid-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+            display: inline-flex;
+            align-items: center;
             gap: 8px;
-            margin-top: 20px;
-            justify-content: center;
+            transition: all 0.2s ease;
+            box-shadow: var(--shadow);
         }
-        .sticker {
-            width: 50px;
-            height: 50px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: #4CAF50;
-            color: white;
-            font-weight: bold;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-            font-size: 16px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        .sticker.collected {
-            background-color: #f44336;
-        }
-        .sticker:hover {
-            transform: scale(1.05);
-        }
-        .info {
-            margin-top: 15px;
-            text-align: center;
-            color: #666;
-        }
-        .hidden {
-            display: none;
-        }
+
+        .btn-primary { background-color: var(--color-primary); color: white; }
+        .btn-primary:hover { background-color: #2a6bd9; transform: translateY(-2px); }
+        .btn-secondary { background-color: #f1f3f5; color: var(--color-text); }
+        .btn-secondary:hover { background-color: #e4e7eb; }
+        .btn-success { background-color: var(--color-success); color: white; }
+        .btn-success:hover { background-color: #439a46; }
+        .btn-warning { background-color: var(--color-secondary); color: white; }
+        .btn-warning:hover { background-color: #e56337; }
+        .btn-danger { background-color: var(--color-danger); color: white; }
+        .btn-danger:hover { background-color: #d32f2f; }
+
         .collections-list {
-            margin-top: 20px;
-        }
-        .collection-item {
-            padding: 15px;
-            margin-bottom: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
             display: flex;
-            justify-content: space-between;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .collection-item {
+            background: white;
+            padding: 20px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            display: flex;
+            gap: 16px;
+        }
+
+        .collection-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #f0f0f0;
+            flex-shrink: 0;
+            display: flex;
             align-items: center;
-            cursor: pointer;
-            transition: background-color 0.2s;
+            justify-content: center;
+            font-size: 24px;
+            color: #999;
+            overflow: hidden;
         }
-        .collection-item:hover {
-            background-color: #f9f9f9;
+
+        .collection-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
+
+        .collection-content {
+            flex: 1;
+        }
+
+        .collection-header {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 16px;
+        }
+
+        .collection-info {
+            flex: 1;
+            min-width: 200px;
+        }
+
         .collection-name {
-            font-weight: bold;
-            color: #333;
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--color-primary);
+            margin-bottom: 6px;
         }
-        .collection-size {
+
+        .collection-stats {
             color: #666;
             font-size: 14px;
+            display: flex;
+            gap: 12px;
         }
-        .back-button {
-            background-color: #666;
-            margin-bottom: 15px;
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
         }
-        .back-button:hover {
-            background-color: #555;
+
+        .stat-label {
+            font-size: 12px;
+            color: #888;
+        }
+
+        .stat-value {
+            font-weight: 600;
+            color: var(--color-text);
+        }
+
+        .collection-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-self: center;
+        }
+
+        .grid-container {
+            margin-top: 20px;
+            display: grid;
+            gap: 6px;
+            background: #f5f7fa;
+            padding: 16px;
+            border-radius: var(--radius);
+            grid-template-columns: repeat(auto-fill, minmax(48px, 1fr));
+        }
+
+        .sticker {
+            aspect-ratio: 1 / 1.2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border-radius: 8px;
+            user-select: none;
+            overflow: hidden;
+            font-weight: bold;
+        }
+
+        .sticker-number {
+            font-size: 18px;
+            color: white;
+        }
+
+        .sticker.gray .sticker-number {
+            color: #555;
+        }
+
+        .sticker-count {
+            font-size: 10px;
+            margin-top: 2px;
+            color: white;
+            font-weight: bold;
+        }
+
+        .sticker.gray { background-color: var(--color-gray); }
+        .sticker.green { background-color: var(--color-success); }
+        .sticker.orange { background-color: var(--color-secondary); }
+
+        @media (max-width: 600px) {
+            .sticker-number { font-size: 16px; }
+            .sticker-count { font-size: 9px; }
+            .collection-stats { flex-direction: column; gap: 4px; }
+            h1 { font-size: 24px; }
+            .collection-item {
+                flex-direction: column;
+            }
+            .collection-avatar {
+                align-self: flex-start;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Administrador de Colecciones de Cromos</h1>
+    <h1>📦 Colecciones de Cromos</h1>
 
-        <!-- Home - Lista de colecciones y formulario para crear nueva -->
-        <div id="home-screen">
-            <div class="collections-list">
-                <h2>Colecciones disponibles</h2>
-                <div id="collections-container"></div>
-            </div>
-
-            <div class="form-group">
-                <h2>Crear nueva colección</h2>
-                <label for="new-collection-name">Nombre de la colección:</label>
-                <input type="text" id="new-collection-name" placeholder="Ej: Fútbol 2024" required>
-            </div>
-
-            <div class="form-group">
-                <label for="new-sticker-count">Cantidad de cromos en la colección:</label>
-                <input type="number" id="new-sticker-count" min="1" placeholder="Ej: 50" required>
-            </div>
-
-            <button id="create-new-collection">Crear Colección</button>
+    <div class="form-container">
+        <div class="avatar-preview" id="avatarPreview">
+            📦
         </div>
-
-        <!-- Colección activa - Grilla de cromos -->
-        <div id="collection-screen" class="hidden">
-            <button class="back-button" id="back-to-home">← Volver al inicio</button>
-            <h2 id="active-collection-title"></h2>
-            <div class="grid-container" id="sticker-grid"></div>
-            <div class="info">
-                <p>Clickea los cromos para marcarlos como obtenidos (verde → rojo)</p>
-                <button id="reset-collection">Reiniciar Colección</button>
-            </div>
-        </div>
+        <input type="text" id="collectionName" placeholder="Nombre de la colección" />
+        <input type="number" id="stickerCount" placeholder="Cantidad de cromos" min="1" />
+        <input type="file" id="imageUpload" accept="image/*" capture="environment" style="display:none;" />
+        <button id="uploadBtn" class="btn btn-secondary">
+            <span>📷</span> Imagen
+        </button>
+        <button id="saveBtn" class="btn btn-primary">
+            <span id="saveIcon">➕</span> <span id="saveText">Crear</span>
+        </button>
+        <button id="cancelBtn" class="btn btn-secondary" style="display:none;">
+            <span>↩️</span> Cancelar
+        </button>
     </div>
 
+    <div class="collections-list" id="collectionsList"></div>
+
     <script>
-        // Almacenamiento de colecciones en localStorage
-        let collections = JSON.parse(localStorage.getItem('stickersCollections')) || [];
-
-        // Función para guardar colecciones en localStorage
-        function saveCollections() {
-            localStorage.setItem('stickersCollections', JSON.stringify(collections));
+        // Manejo seguro de localStorage
+        function getStoredCollections() {
+            try {
+                const data = localStorage.getItem('collections');
+                return data ? JSON.parse(data) : [];
+            } catch (e) {
+                console.warn('localStorage no disponible', e);
+                return [];
+            }
         }
 
-        // Función para renderizar la lista de colecciones en el home
-        function renderCollectionsList() {
-            const container = document.getElementById('collections-container');
-            container.innerHTML = '';
+        function saveToLocalStorage(collections) {
+            try {
+                localStorage.setItem('collections', JSON.stringify(collections));
+            } catch (e) {
+                console.error('Error al guardar', e);
+            }
+        }
 
-            if (collections.length === 0) {
-                container.innerHTML = '<p style="color: #666; text-align: center;">No tienes colecciones aún. ¡Crea una nueva!</p>';
+        let collections = getStoredCollections();
+        let editingIndex = -1;
+        let currentImageBase64 = null; // Imagen actual en el formulario
+
+        const collectionNameInput = document.getElementById('collectionName');
+        const stickerCountInput = document.getElementById('stickerCount');
+        const imageUpload = document.getElementById('imageUpload');
+        const uploadBtn = document.getElementById('uploadBtn');
+        const avatarPreview = document.getElementById('avatarPreview');
+        const saveBtn = document.getElementById('saveBtn');
+        const cancelBtn = document.getElementById('cancelBtn');
+        const saveIcon = document.getElementById('saveIcon');
+        const saveText = document.getElementById('saveText');
+        const collectionsList = document.getElementById('collectionsList');
+
+        // Abrir selector de imagen
+        uploadBtn.addEventListener('click', () => {
+            imageUpload.click();
+        });
+
+        // Manejar selección de imagen
+        imageUpload.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    currentImageBase64 = event.target.result;
+                    avatarPreview.innerHTML = `<img src="${currentImageBase64}" alt="Avatar">`;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        function updateSaveButton(isEditing) {
+            if (isEditing) {
+                saveIcon.textContent = '✅';
+                saveText.textContent = 'Guardar';
+                saveBtn.className = 'btn btn-success';
+            } else {
+                saveIcon.textContent = '➕';
+                saveText.textContent = 'Crear';
+                saveBtn.className = 'btn btn-primary';
+            }
+        }
+
+        function saveCollection() {
+            const name = collectionNameInput.value.trim();
+            const count = parseInt(stickerCountInput.value);
+            if (!name || isNaN(count) || count <= 0) {
+                alert('Por favor ingresa un nombre y una cantidad válida.');
                 return;
             }
 
-            collections.forEach((collection, index) => {
-                const item = document.createElement('div');
-                item.className = 'collection-item';
-                item.innerHTML = `
-                    <span class="collection-name">${collection.name}</span>
-                    <span class="collection-size">${collection.count} cromos</span>
-                `;
-
-                item.addEventListener('click', () => {
-                    loadCollection(index);
-                });
-
-                container.appendChild(item);
-            });
-        }
-
-        // Función para cargar una colección específica
-        function loadCollection(index) {
-            const collection = collections[index];
-            if (!collection) return;
-
-            // Ocultar home y mostrar pantalla de colección
-            document.getElementById('home-screen').classList.add('hidden');
-            document.getElementById('collection-screen').classList.remove('hidden');
-
-            // Actualizar título
-            document.getElementById('active-collection-title').textContent = collection.name;
-
-            // Limpiar la grilla anterior
-            const grid = document.getElementById('sticker-grid');
-            grid.innerHTML = '';
-
-            // Crear los cromos
-            for (let i = 1; i <= collection.count; i++) {
-                const sticker = document.createElement('div');
-                sticker.className = 'sticker';
-                sticker.textContent = i;
-
-                // Si el cromo ya estaba marcado como obtenido, aplicar estilo rojo
-                if (collection.collected && collection.collected.includes(i)) {
-                    sticker.classList.add('collected');
-                }
-
-                sticker.addEventListener('click', function() {
-                    this.classList.toggle('collected');
-
-                    // Actualizar estado en el objeto de colección
-                    const collected = collection.collected || [];
-                    const stickerNum = parseInt(this.textContent);
-
-                    if (this.classList.contains('collected')) {
-                        if (!collected.includes(stickerNum)) {
-                            collected.push(stickerNum);
-                        }
-                    } else {
-                        const index = collected.indexOf(stickerNum);
-                        if (index > -1) {
-                            collected.splice(index, 1);
-                        }
-                    }
-
-                    collection.collected = collected;
-                    saveCollections();
-                });
-
-                grid.appendChild(sticker);
-            }
-
-            // Guardar el índice de la colección actual
-            window.currentCollectionIndex = index;
-        }
-
-        // Evento para crear una nueva colección
-        document.getElementById('create-new-collection').addEventListener('click', function() {
-            const collectionName = document.getElementById('new-collection-name').value.trim();
-            const stickerCount = parseInt(document.getElementById('new-sticker-count').value);
-
-            if (!collectionName || isNaN(stickerCount) || stickerCount <= 0) {
-                alert('Por favor, ingresa un nombre válido y una cantidad de cromos mayor a 0.');
-                return;
-            }
-
-            // Verificar si ya existe una colección con ese nombre
-            const existing = collections.find(c => c.name === collectionName);
-            if (existing) {
-                if (!confirm(`Ya existe una colección llamada "${collectionName}". ¿Deseas sobrescribirla?`)) {
-                    return;
-                }
-                // Eliminar la colección existente
-                collections = collections.filter(c => c.name !== collectionName);
-            }
-
-            // Crear nueva colección
-            const newCollection = {
-                name: collectionName,
-                count: stickerCount,
-                collected: []
+            const collectionData = {
+                name,
+                total: count,
+                owned: Array(count).fill(0),
+                showGrid: false,
+                image: currentImageBase64 // Puede ser null o Base64
             };
 
-            collections.push(newCollection);
-            saveCollections();
+            if (editingIndex === -1) {
+                collections.push(collectionData);
+            } else {
+                const oldOwned = collections[editingIndex].owned;
+                const newOwned = Array(count).fill(0);
+                for (let i = 0; i < Math.min(oldOwned.length, count); i++) {
+                    newOwned[i] = oldOwned[i];
+                }
+                collections[editingIndex] = {
+                    ...collectionData,
+                    owned: newOwned,
+                    showGrid: collections[editingIndex].showGrid
+                };
+                editingIndex = -1;
+                updateSaveButton(false);
+                cancelBtn.style.display = 'none';
+            }
 
-            // Limpiar formularios
-            document.getElementById('new-collection-name').value = '';
-            document.getElementById('new-sticker-count').value = '';
+            saveToLocalStorage(collections);
+            renderCollections();
+            clearForm();
+        }
 
-            // Renderizar lista actualizada
-            renderCollectionsList();
+        function cancelEdit() {
+            editingIndex = -1;
+            updateSaveButton(false);
+            cancelBtn.style.display = 'none';
+            clearForm();
+        }
 
-            // Mostrar mensaje de éxito
-            alert(`Colección "${collectionName}" creada exitosamente!`);
-        });
+        function clearForm() {
+            collectionNameInput.value = '';
+            stickerCountInput.value = '';
+            currentImageBase64 = null;
+            avatarPreview.innerHTML = '📦';
+            imageUpload.value = '';
+        }
 
-        // Evento para volver al home desde la colección
-        document.getElementById('back-to-home').addEventListener('click', function() {
-            document.getElementById('collection-screen').classList.add('hidden');
-            document.getElementById('home-screen').classList.remove('hidden');
-        });
+        function renderCollections() {
+            collectionsList.innerHTML = '';
 
-        // Evento para reiniciar colección
-        document.getElementById('reset-collection').addEventListener('click', function() {
-            const collection = collections[window.currentCollectionIndex];
-            if (!collection) return;
+            collections.forEach((collection, index) => {
+                const ownedCount = collection.owned.filter(n => n >= 1).length;
+                const totalPhysical = collection.owned.reduce((sum, n) => sum + n, 0);
+                const duplicates = totalPhysical - ownedCount;
 
-            // Reiniciar todos los cromos
-            collection.collected = [];
-            saveCollections();
+                const div = document.createElement('div');
+                div.className = 'collection-item';
 
-            // Actualizar visualmente la grilla
-            const stickers = document.querySelectorAll('.sticker');
-            stickers.forEach(sticker => {
-                sticker.classList.remove('collected');
-            });
-        });
+                const avatarDiv = document.createElement('div');
+                avatarDiv.className = 'collection-avatar';
+                if (collection.image) {
+                    avatarDiv.innerHTML = `<img src="${collection.image}" alt="Colección">`;
+                } else {
+                    avatarDiv.textContent = '📦';
+                }
 
-        // Registrar service worker
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', function() {
-                navigator.serviceWorker.register('/cromo-coleccion/sw.js').then(function(registration) {
-                    console.log('SW registrado:', registration.scope);
-                }).catch(function(error) {
-                    console.log('SW falló:', error);
+                const contentDiv = document.createElement('div');
+                contentDiv.className = 'collection-content';
+
+                const header = document.createElement('div');
+                header.className = 'collection-header';
+
+                const info = document.createElement('div');
+                info.className = 'collection-info';
+                info.innerHTML = `
+                    <div class="collection-name">${collection.name}</div>
+                    <div class="collection-stats">
+                        <div class="stat-item">
+                            <span class="stat-label">Completados</span>
+                            <span class="stat-value">${ownedCount}/${collection.total}</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Repetidos</span>
+                            <span class="stat-value">${duplicates}</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Total cromos</span>
+                            <span class="stat-value">${totalPhysical}</span>
+                        </div>
+                    </div>
+                `;
+
+                const actions = document.createElement('div');
+                actions.className = 'collection-actions';
+
+                const toggleBtn = document.createElement('button');
+                toggleBtn.className = collection.showGrid ? 'btn btn-secondary' : 'btn btn-primary';
+                toggleBtn.innerHTML = `<span>${collection.showGrid ? '👁️' : '🔍'}</span> ${collection.showGrid ? 'Ocultar' : 'Ver'}`;
+                toggleBtn.addEventListener('click', () => {
+                    collection.showGrid = !collection.showGrid;
+                    saveToLocalStorage(collections);
+                    renderCollections();
                 });
+
+                const editBtn = document.createElement('button');
+                editBtn.className = 'btn btn-warning';
+                editBtn.innerHTML = '<span>✏️</span> Editar';
+                editBtn.addEventListener('click', () => editCollection(index));
+
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = 'btn btn-danger';
+                deleteBtn.innerHTML = '<span>🗑️</span> Eliminar';
+                deleteBtn.addEventListener('click', () => deleteCollection(index));
+
+                actions.appendChild(toggleBtn);
+                actions.appendChild(editBtn);
+                actions.appendChild(deleteBtn);
+
+                header.appendChild(info);
+                header.appendChild(actions);
+                contentDiv.appendChild(header);
+
+                if (collection.showGrid) {
+                    const grid = createGrid(collection, index);
+                    contentDiv.appendChild(grid);
+                }
+
+                div.appendChild(avatarDiv);
+                div.appendChild(contentDiv);
+                collectionsList.appendChild(div);
             });
         }
 
-        // Inicializar la aplicación
-        document.addEventListener('DOMContentLoaded', function() {
-            renderCollectionsList();
-        });
-    </script>
+        function createGrid(collection, collectionIndex) {
+            const gridContainer = document.createElement('div');
+            gridContainer.className = 'grid-container';
 
+            collection.owned.forEach((count, i) => {
+                const sticker = document.createElement('div');
+                const number = i + 1;
+
+                if (count === 0) {
+                    sticker.className = 'sticker gray';
+                    sticker.innerHTML = `<div class="sticker-number">${number}</div>`;
+                } else if (count === 1) {
+                    sticker.className = 'sticker green';
+                    sticker.innerHTML = `
+                        <div class="sticker-number">${number}</div>
+                        <div class="sticker-count">${count}</div>
+                    `;
+                } else {
+                    sticker.className = 'sticker orange';
+                    sticker.innerHTML = `
+                        <div class="sticker-number">${number}</div>
+                        <div class="sticker-count">${count}</div>
+                    `;
+                }
+
+                sticker.addEventListener('click', () => {
+                    collections[collectionIndex].owned[i] += 1;
+                    saveToLocalStorage(collections);
+                    renderCollections();
+                });
+
+                gridContainer.appendChild(sticker);
+            });
+
+            return gridContainer;
+        }
+
+        function editCollection(index) {
+            const coll = collections[index];
+            collectionNameInput.value = coll.name;
+            stickerCountInput.value = coll.total;
+            currentImageBase64 = coll.image || null;
+            if (coll.image) {
+                avatarPreview.innerHTML = `<img src="${coll.image}" alt="Avatar">`;
+            } else {
+                avatarPreview.innerHTML = '📦';
+            }
+            editingIndex = index;
+            updateSaveButton(true);
+            cancelBtn.style.display = 'inline-flex';
+        }
+
+        function deleteCollection(index) {
+            if (confirm('¿Seguro que deseas eliminar esta colección?')) {
+                collections.splice(index, 1);
+                saveToLocalStorage(collections);
+                renderCollections();
+            }
+        }
+
+        saveBtn.addEventListener('click', saveCollection);
+        cancelBtn.addEventListener('click', cancelEdit);
+
+        updateSaveButton(false);
+        renderCollections();
+    </script>
 </body>
 </html>
