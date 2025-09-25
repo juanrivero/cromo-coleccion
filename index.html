@@ -504,85 +504,88 @@
         }
 
         function createGrid(collection, collectionIndex) {
-            const gridContainer = document.createElement('div');
-            gridContainer.className = 'grid-container';
+    const gridContainer = document.createElement('div');
+    gridContainer.className = 'grid-container';
 
-            collection.owned.forEach((initialCount, i) => {
-                const sticker = document.createElement('div');
-                const number = i + 1;
+    collection.owned.forEach((initialCount, i) => {
+        const sticker = document.createElement('div');
+        const number = i + 1;
 
-                function updateStickerUI() {
-                    const currentCount = collections[collectionIndex].owned[i];
-                    if (currentCount === 0) {
-                        sticker.className = 'sticker gray';
-                        sticker.innerHTML = `<div class="sticker-number">${number}</div>`;
-                    } else if (currentCount === 1) {
-                        sticker.className = 'sticker green';
-                        sticker.innerHTML = `
-                            <div class="sticker-number">${number}</div>
-                            <div class="sticker-count">${currentCount}</div>
-                        `;
-                    } else {
-                        sticker.className = 'sticker orange';
-                        sticker.innerHTML = `
-                            <div class="sticker-number">${number}</div>
-                            <div class="sticker-count">${currentCount}</div>
-                        `;
-                    }
-                }
+        function updateStickerUI() {
+            const currentCount = collections[collectionIndex].owned[i];
+            if (currentCount === 0) {
+                sticker.className = 'sticker gray';
+                sticker.innerHTML = `<div class="sticker-number">${number}</div>`;
+            } else if (currentCount === 1) {
+                sticker.className = 'sticker green';
+                sticker.innerHTML = `
+                    <div class="sticker-number">${number}</div>
+                    <div class="sticker-count">${currentCount}</div>
+                `;
+            } else {
+                sticker.className = 'sticker orange';
+                sticker.innerHTML = `
+                    <div class="sticker-number">${number}</div>
+                    <div class="sticker-count">${currentCount}</div>
+                `;
+            }
+        }
 
-                updateStickerUI();
+        updateStickerUI();
 
-                let isHolding = false;
-                let holdTimer = null;
+        let isHolding = false;
+        let holdTimer = null;
 
-                const startHold = () => {
-                    isHolding = true;
-                    holdTimer = setTimeout(() => {
-                        collections[collectionIndex].owned[i] = 0;
-                        isHolding = false;
-                        saveToLocalStorage(collections);
-                        renderCollections(); // 👈 Actualiza TODO
-                    }, 800);
-                };
+        const startInteraction = (e) => {
+            if (e.type === 'touchstart') e.preventDefault();
+            isHolding = true;
+            holdTimer = setTimeout(() => {
+                // Reset por hold
+                collections[collectionIndex].owned[i] = 0;
+                saveToLocalStorage(collections);
+                renderCollections();
+                isHolding = false;
+            }, 800);
+        };
 
-                const cancelHold = () => {
-                    if (holdTimer) {
-                        clearTimeout(holdTimer);
-                        holdTimer = null;
-                    }
-                    isHolding = false;
-                };
+        const endInteraction = (e) => {
+            if (e.type === 'touchend') e.preventDefault();
+            if (holdTimer) {
+                clearTimeout(holdTimer);
+                holdTimer = null;
+            }
+            if (isHolding) {
+                // Clic normal (no fue hold)
+                collections[collectionIndex].owned[i] += 1;
+                saveToLocalStorage(collections);
+                renderCollections();
+            }
+            isHolding = false;
+        };
 
-                sticker.addEventListener('click', () => {
-                    if (!isHolding) {
-                        collections[collectionIndex].owned[i] += 1;
-                        saveToLocalStorage(collections);
-                        renderCollections(); // 👈 Actualiza TODO
-                    }
-                });
+        const cancelInteraction = () => {
+            if (holdTimer) {
+                clearTimeout(holdTimer);
+                holdTimer = null;
+            }
+            isHolding = false;
+        };
 
-                // Mouse
-                sticker.addEventListener('mousedown', startHold);
-                sticker.addEventListener('mouseleave', cancelHold);
-                sticker.addEventListener('mouseup', cancelHold);
+        // Soporte para touch (móviles)
+        sticker.addEventListener('touchstart', startInteraction, { passive: false });
+        sticker.addEventListener('touchend', endInteraction, { passive: false });
+        sticker.addEventListener('touchmove', cancelInteraction, { passive: false });
 
-                // Touch
-                sticker.addEventListener('touchstart', (e) => {
-                    e.preventDefault();
-                    startHold();
-                });
-                sticker.addEventListener('touchend', (e) => {
-                    e.preventDefault();
-                    cancelHold();
-                });
-                sticker.addEventListener('touchmove', cancelHold);
+        // Soporte para mouse (escritorio)
+        sticker.addEventListener('mousedown', startInteraction);
+        sticker.addEventListener('mouseup', endInteraction);
+        sticker.addEventListener('mouseleave', cancelInteraction);
 
-                gridContainer.appendChild(sticker);
-            });
+        gridContainer.appendChild(sticker);
+    });
 
-            return gridContainer;
-        }      
+    return gridContainer;
+}
 
         function editCollection(index) {
             const coll = collections[index];
@@ -613,4 +616,3 @@
     </script>
 </body>
 </html>
-
